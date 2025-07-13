@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.StaticFiles;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //  Si quieres seguir usando RazorPages para otras cosas, puedes dejar esto:
@@ -15,13 +17,20 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 //  Sirve index.html automáticamente si van a "/"
-app.UseDefaultFiles();
-app.UseStaticFiles();
+var provider = new FileExtensionContentTypeProvider();
+provider.Mappings[".tmj"] = "application/json";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
 
 app.UseRouting();
 
 // Si quieres mantener RazorPages para otras rutas
 app.UseAuthorization();
 app.MapRazorPages();
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
